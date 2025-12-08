@@ -1,11 +1,13 @@
 package com.example.components
 import android.os.Bundle
+import android.widget.Space
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -17,6 +19,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -57,55 +60,54 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun Components(modifier: Modifier = Modifier) {
-    val myButtonBackgroundColor = remember {
-        mutableStateOf(Color.Red)
+    val genderMale  = remember {
+        mutableStateOf(false)
     }
-
-    val myButtonText = remember {
-        mutableStateOf("Press me")
+    val genderFemale  = remember {
+        mutableStateOf(false)
     }
-
-    val myTextFieldValue = remember {
-        mutableStateOf("")
+    val title = remember {
+        mutableStateOf("What is your Gender ?")
+    }
+    fun genderChooser() {
+        if(genderFemale.value && genderMale.value) title.value =  "What is your gender ? " else if (genderMale.value ) title.value =  " Your Gender is Male" else title.value = "Your Gender is Female"
     }
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Image(painter = painterResource(R.drawable.airport_image), "", contentScale = ContentScale.Fit,  alignment = Alignment.TopStart,modifier = Modifier.size(300.dp),)
         Spacer(Modifier.height(20.dp))
-        Button(
-            onClick = {
-                myButtonBackgroundColor.value = Color.Blue
-                myButtonText.value = "Text changed"
-            },
-            modifier = Modifier.size(250.dp, 60.dp),
-            shape = RoundedCornerShape(10.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = myButtonBackgroundColor.value)
+        Text(title.value, fontSize = 25.sp, textAlign = TextAlign.Center, color = Color.Blue)
+        Column(
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.SpaceEvenly
         ) {
-            Text(myButtonText.value, textAlign = TextAlign.Center, fontSize = 25.sp)
+            Row( verticalAlignment = Alignment.CenterVertically) {
+                Checkbox(checked = genderMale.value, onCheckedChange = {
+                    genderMale.value = it
+                    genderFemale.value = !it
+                    genderChooser()
+                })
+                Text("Male")
+            }
+            Spacer(Modifier.height(20.dp))
+            Row( verticalAlignment = Alignment.CenterVertically) {
+                Checkbox(
+                    checked = genderFemale.value, onCheckedChange = {
+                        genderFemale.value = it
+                        genderMale.value = !it
+                        genderChooser()
+                    })
+                Text("Female")
+            }
         }
 
-        Spacer(Modifier.height(16.dp))
-        TextField(value = myTextFieldValue.value,onValueChange = {
-            myTextFieldValue.value = it
-        },
-        label = {Text("Enter your name ")},
-        modifier = Modifier.width(250.dp),
-            colors = TextFieldDefaults.colors(
-                focusedTextColor = Color.Red,
-                focusedContainerColor = Color.Blue
-            ),
-
-            textStyle = TextStyle.Default.copy(fontSize = 23.sp, color = Color.Black),
-            maxLines = 4,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            keyboardActions = KeyboardActions(),
-            visualTransformation = PasswordVisualTransformation()
-        )
     }
+
 }
+
+
 
 @Preview(showBackground = true)
 @Composable
