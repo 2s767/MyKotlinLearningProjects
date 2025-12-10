@@ -1,19 +1,24 @@
 package com.example.components
 import android.os.Bundle
-import android.widget.GridLayout
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.gestures.snapping.SnapPosition
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.currentCompositionContext
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -23,6 +28,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.components.ui.theme.ComponentsTheme
+import org.w3c.dom.Text
+import kotlin.math.exp
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,7 +38,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             ComponentsTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    SwitchExample(
+                    RadioButtonExample(
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
@@ -41,41 +48,43 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun SwitchExample(modifier: Modifier = Modifier) {
-    val switchState = remember {
-        mutableStateOf(true)
+fun RadioButtonExample(modifier: Modifier = Modifier) {
+    val countryName = remember {
+        mutableStateOf("Germany")
     }
-    val myAlphaValue = remember {
-        mutableStateOf(1F)
+    val stateOfDropDown = remember {
+        mutableStateOf(false)
     }
+    val listOfCountries = listOf<String>("Germany","USA","France","Italy","BAA","Uzbekistan")
+    Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+        Row(horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.clickable(onClick = {
+            stateOfDropDown.value = true
+        })) {
+            Text(countryName.value)
+            Image(painter = painterResource(R.drawable.round_arrow_drop_down_circle_24,), contentDescription = "",
+                Modifier.size(20.dp).clickable(onClick = {
 
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceEvenly,
-        modifier = Modifier.fillMaxSize()
-    ) {
-
-       if(switchState.value){
-           myAlphaValue.value = 1f
-       }else {
-           myAlphaValue.value = 0F
-       }
-
-           Image(painter = painterResource(R.drawable.airport_image),"Airport logo",modifier = Modifier.alpha(myAlphaValue.value))
-
-        Switch(checked = switchState.value, onCheckedChange = {
-            switchState.value = it
-        })
-
-        Text(if(switchState.value) "Rasm ko'ringan" else "Rasm ko'rinmagan")
-
+                }))
+            DropdownMenu(onDismissRequest = {
+                stateOfDropDown.value = false
+            }, expanded = stateOfDropDown.value  ) {
+                listOfCountries.forEach {
+                    it -> DropdownMenuItem(text = {Text(it)}, onClick = {
+                        stateOfDropDown.value = false
+                        countryName.value = it
+                    })
+                }
+            }
+        }
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun SwitchExamplePreview() {
+fun RadioButtonExamplePreview() {
     ComponentsTheme {
-        SwitchExample()
+        RadioButtonExample()
     }
 }
