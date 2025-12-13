@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Components</string>
+    <string name="default_text">This is default text</string>
+
 </resources>
