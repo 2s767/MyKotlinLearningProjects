@@ -26,7 +26,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             ComponentsTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    AlertDialogExample(
+                    OptionsMenuExample(
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
@@ -37,7 +37,10 @@ class MainActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AlertDialogExample(modifier: Modifier = Modifier) {
+fun OptionsMenuExample(modifier: Modifier = Modifier) {
+    var dropDownMenuStatus by remember {
+        mutableStateOf(false)
+    }
     var centerText by remember {
         mutableStateOf("This is default text")
     }
@@ -72,8 +75,25 @@ fun AlertDialogExample(modifier: Modifier = Modifier) {
                    }
                    IconButton(onClick = {
                        centerText = "MoreVert button is clicked"
+                       dropDownMenuStatus = true
                    }) {
                        Icon(Icons.Outlined.MoreVert,"MoreVert Button")
+                       DropdownMenu(expanded = dropDownMenuStatus, onDismissRequest = {
+                           dropDownMenuStatus = false
+                       }) {
+                           DropdownMenuItem(text = {
+                               Text("Settings")
+                           }, onClick = {
+                               centerText = "Settings is clicked"
+                               dropDownMenuStatus = false
+                           } )
+                           DropdownMenuItem(text = {
+                               Text("Log Out")
+                           }, onClick = {
+                               centerText = "Log out is clicked"
+                               dropDownMenuStatus = false
+                           } )
+                       }
                    }
                },
                colors = TopAppBarDefaults.topAppBarColors(
