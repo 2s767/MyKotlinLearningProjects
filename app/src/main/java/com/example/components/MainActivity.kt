@@ -17,6 +17,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHost
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.components.ui.theme.ComponentsTheme
 
 class MainActivity : ComponentActivity() {
@@ -25,94 +29,22 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             ComponentsTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    OptionsMenuExample(
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                MyNavigationController()
             }
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun OptionsMenuExample(modifier: Modifier = Modifier) {
-    var dropDownMenuStatus by remember {
-        mutableStateOf(false)
+fun MyNavigationController(){
+    val navigationController = rememberNavController()
+
+    NavHost(navController = navigationController, startDestination = "FirstPage"){
+        composable(route = "FirstPage"){
+            FirstPage(navigationController)
+        }
+        composable ("SecondPage"){
+            SecondPage(navigationController)
+        }
     }
-    var centerText by remember {
-        mutableStateOf("This is default text")
-    }
-   Scaffold(
-       topBar = {
-           TopAppBar(
-               title = {
-                   Column() {
-                       Text("Main title", fontSize = 20.sp, color = Color.White)
-
-                       Text("Subtitle ", fontSize = 16.sp, color = Color.White)
-                   }
-
-               },
-               navigationIcon = {
-                   IconButton(onClick = {
-                        centerText = "Navigation button is clicked"
-                   }) {
-                       Icon(Icons.Default.Menu, contentDescription = "Navigation Icon")
-                   }
-               },
-               actions = {
-                   IconButton(onClick = {
-                       centerText = "Share button is clicked"
-                   }) {
-                       Icon(Icons.Outlined.Share,"Share Button")
-                   }
-                   IconButton(onClick = {
-                       centerText = "Search button is clicked"
-                   }) {
-                       Icon(Icons.Outlined.Search,"Search Button")
-                   }
-                   IconButton(onClick = {
-                       centerText = "MoreVert button is clicked"
-                       dropDownMenuStatus = true
-                   }) {
-                       Icon(Icons.Outlined.MoreVert,"MoreVert Button")
-                       DropdownMenu(expanded = dropDownMenuStatus, onDismissRequest = {
-                           dropDownMenuStatus = false
-                       }) {
-                           DropdownMenuItem(text = {
-                               Text("Settings")
-                           }, onClick = {
-                               centerText = "Settings is clicked"
-                               dropDownMenuStatus = false
-                           } )
-                           DropdownMenuItem(text = {
-                               Text("Log Out")
-                           }, onClick = {
-                               centerText = "Log out is clicked"
-                               dropDownMenuStatus = false
-                           } )
-                       }
-                   }
-               },
-               colors = TopAppBarDefaults.topAppBarColors(
-                   containerColor = colorResource(R.color.purple_700),
-                   navigationIconContentColor = Color.White,
-                   actionIconContentColor = Color.White
-
-
-               )
-           )
-       },
-       content = {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Text(centerText)
-            }
-       }
-   )
 }
