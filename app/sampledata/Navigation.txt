@@ -1,0 +1,238 @@
+# Android Jetpack Compose - Navigation tushuntirish
+
+Keling, kodingizni qadamma-qadam tahlil qilamiz va sahifadan sahifaga o'tish qanday ishlashini tushuntirib beraman.
+
+## 1️⃣ MainActivity.kt - Asosiy fayl
+
+```kotlin
+class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        setContent {
+            ComponentsTheme {
+                MyNavigationController() // Bu yerda navigatsiya boshlanadi
+            }
+        }
+    }
+}
+```
+
+**Tushuntirish:**
+- `MainActivity` - ilovaning bosh kirish nuqtasi
+- `setContent` ichida `MyNavigationController()` chaqiriladi
+- Bu funksiya barcha sahifalar o'rtasida navigatsiyani boshqaradi
+
+---
+
+## 2️⃣ MyNavigationController() - Navigatsiya markaziy qismi
+
+```kotlin
+@Composable
+fun MyNavigationController(){
+    val navigationController = rememberNavController() // 1-qadam
+
+    NavHost(navController = navigationController, startDestination = "FirstPage"){ // 2-qadam
+        composable(route = "FirstPage"){ // 3-qadam
+            FirstPage(navigationController)
+        }
+        composable ("SecondPage/{name}/{age}", arguments = listOf(...)){...} // 4-qadam
+    }
+}
+```
+
+### Qadamma-qadam:
+
+**1-qadam:** `rememberNavController()` - navigatsiya kontrollerini yaratadi
+- Bu controller barcha sahifalar o'rtasida harakatlanish uchun ishlatiladi
+
+**2-qadam:** `NavHost` - bu navigatsiya "konteyner"
+- `startDestination = "FirstPage"` - ilova ochilganda birinchi ko'rinadigan sahifa
+
+**3-qadam:** Har bir `composable` - bu bitta sahifa (route/marshrut)
+```kotlin
+composable(route = "FirstPage"){
+    FirstPage(navigationController)
+}
+```
+- `route = "FirstPage"` - sahifaning manzili (URL ga o'xshash)
+- `FirstPage(navigationController)` - ko'rsatiladigan sahifa komponenti
+
+**4-qadam:** Parametrlar bilan sahifa:
+```kotlin
+composable ("SecondPage/{name}/{age}", arguments = listOf(
+    navArgument("name"){ type = NavType.StringType },
+    navArgument("age"){ type = NavType.IntType }
+))
+```
+- `{name}` va `{age}` - bu parametrlar (URL dagi parametrlar kabi)
+- Har bir parametrning turi ko'rsatiladi (String yoki Int)
+
+---
+
+## 3️⃣ FirstPage.kt - Birinchi sahifa
+
+```kotlin
+@Composable
+fun FirstPage(navController: NavController) {
+    val nameTextField = remember { mutableStateOf("") }
+    val ageTextField = remember { mutableStateOf("") }
+
+    // ... TextField'lar ...
+
+    Button(onClick = {
+        if(nameTextField.value.isEmpty() || ageTextField.value.isEmpty()){
+            Toast.makeText(context,"Please fill all fields!", Toast.LENGTH_SHORT).show()
+        } else {
+            // Bu yerda navigatsiya sodir bo'ladi! 👇
+            navController.navigate("SecondPage/${nameTextField.value}/${ageTextField.value}")
+        }
+    }) {
+        Text("Send Button")
+    }
+}
+```
+
+### Navigate qanday ishlaydi:
+
+```kotlin
+navController.navigate("SecondPage/${nameTextField.value}/${ageTextField.value}")
+```
+
+**Misol:** Agar user "Ali" va "25" kiritsa:
+```
+SecondPage/Ali/25
+```
+
+Bu yerda:
+- `SecondPage` - sahifa nomi
+- `Ali` - name parametri
+- `25` - age parametri
+
+---
+
+## 4️⃣ SecondPage.kt - Ikkinchi sahifa
+
+```kotlin
+composable ("SecondPage/{name}/{age}", arguments = listOf(...)){ navBackStackEntry ->
+    val name = navBackStackEntry.arguments?.getString("name")
+    val age = navBackStackEntry.arguments?.getInt("age")
+
+    name?.let { username ->
+        age?.let { userAge ->
+            SecondPage(navigationController, username, userAge)
+        }
+    }
+}
+```
+
+### Parametrlarni olish:
+
+**1. navBackStackEntry** - bu navigatsiya stackdagi joriy sahifa ma'lumotlari
+
+**2. Parametrlarni olish:**
+```kotlin
+val name = navBackStackEntry.arguments?.getString("name")
+val age = navBackStackEntry.arguments?.getInt("age")
+```
+
+**3. Let operatori** - null tekshirish uchun:
+```kotlin
+name?.let { username -> // Agar name null bo'lmasa
+    age?.let { userAge -> // Va age ham null bo'lmasa
+        SecondPage(navigationController, username, userAge) // Sahifani ko'rsat
+    }
+}
+```
+
+### Orqaga qaytish:
+
+```kotlin
+IconButton(onClick = {
+    navController.popBackStack() // Oldingi sahifaga qaytish
+}) {
+    Icon(Icons.AutoMirrored.Outlined.ArrowBack, "Back Button")
+}
+```
+
+`popBackStack()` - navigatsiya stackdan joriy sahifani olib tashlaydi va oldingi sahifaga qaytadi.
+
+---
+
+## 📊 Butun jarayonning vizual ko'rinishi:
+
+```
+1. MainActivity → MyNavigationController yaratiladi
+                        ↓
+2. NavHost → startDestination = "FirstPage"
+                        ↓
+3. FirstPage ko'rsatiladi
+                        ↓
+4. User ma'lumot kiritadi va "Send" ni bosadi
+                        ↓
+5. navController.navigate("SecondPage/Ali/25")
+                        ↓
+6. NavHost "SecondPage/{name}/{age}" ni topadi
+                        ↓
+7. Parametrlar (name="Ali", age=25) ajratiladi
+                        ↓
+8. SecondPage(navController, "Ali", 25) ko'rsatiladi
+                        ↓
+9. User orqaga qaytish tugmasini bosadi
+                        ↓
+10. navController.popBackStack()
+                        ↓
+11. FirstPage qaytadan ko'rsatiladi
+```
+
+---
+
+## 🎯 Xulosa:
+
+1. **NavController** - sahifalar o'rtasida harakatlanish uchun "haydovchi"
+2. **NavHost** - barcha sahifalarni saqlaydigan "konteyner"
+3. **navigate()** - yangi sahifaga o'tish
+4. **popBackStack()** - orqaga qaytish
+5. **Arguments** - sahifalar o'rtasida ma'lumot uzatish
+
+---
+
+## 📝 Qo'shimcha maslahatlar:
+
+### popUpTo ishlatish:
+```kotlin
+navController.navigate("SecondPage/$name/$age") {
+    popUpTo("FirstPage") { inclusive = true }
+}
+```
+- Bu FirstPage ni stackdan olib tashlaydi
+- User orqaga qaytganda FirstPage ga emas, undan oldingi sahifaga boradi
+
+### launchSingleTop:
+```kotlin
+navController.navigate("SecondPage/$name/$age") {
+    launchSingleTop = true
+}
+```
+- Agar SecondPage allaqachon stackda bo'lsa, yangi nusxa yaratmaydi
+
+### Xavfsiz navigatsiya:
+Har doim parametrlarni tekshiring:
+```kotlin
+if(nameTextField.value.isEmpty() || ageTextField.value.isEmpty()){
+    Toast.makeText(context,"Please fill all fields!", Toast.LENGTH_SHORT).show()
+} else {
+    navController.navigate("SecondPage/${nameTextField.value}/${ageTextField.value}")
+}
+```
+
+---
+
+## 🔗 Foydali havolalar:
+
+- [Rasmiy Android Navigation dokumentatsiyasi](https://developer.android.com/jetpack/compose/navigation)
+- [Compose Navigation codelab](https://developer.android.com/codelabs/jetpack-compose-navigation)
+
+---
+
+**Eslatma:** Agar biror qismi tushunarsiz bo'lsa yoki qo'shimcha savollar bo'lsa, bemalol so'rang!
