@@ -23,7 +23,7 @@ import androidx.navigation.NavController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SecondPage(navController: NavController){
+fun SecondPage(navController: NavController,name : String , age : Int){
     Scaffold(
         topBar = {
             TopAppBar(
@@ -41,8 +41,8 @@ fun SecondPage(navController: NavController){
         },
         content = {
             Column(modifier = Modifier.fillMaxSize().padding(it), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-                Text("Name", fontSize = 20.sp)
-                Text("Age",)
+                Text("Name : $name", fontSize = 20.sp)
+                Text("Age : $age",)
             }
         }
     )

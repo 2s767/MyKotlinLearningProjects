@@ -1,4 +1,5 @@
 package com.example.components
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,6 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 
@@ -28,13 +30,13 @@ import androidx.navigation.NavController
 fun FirstPage(navController: NavController) {
     val nameTextField = remember { mutableStateOf("") }
     val ageTextField = remember { mutableStateOf("") }
+    val context = LocalContext.current
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
                     Text("First Page")
                 },
-
                 )
         },
         content = {
@@ -64,8 +66,16 @@ fun FirstPage(navController: NavController) {
 
                 Button(
                     onClick = {
-                        navController.navigate("SecondPage"){
+                        try {
+                            if(nameTextField.value.isEmpty() || ageTextField.value.isEmpty()){
+                                Toast.makeText(context,"Please fill all fields !", Toast.LENGTH_SHORT).show()
+                            }else{
+                                navController.navigate("SecondPage/${nameTextField.value}/${ageTextField.value}"){
 //                           popUpTo("FirstPage"){inclusive = true}
+                                }
+                            }
+                        }catch (e : IllegalArgumentException){
+                            Toast.makeText(context,"Please inter valid data ", Toast.LENGTH_SHORT).show()
                         }
                     },
                     shape = RoundedCornerShape(20.dp),
