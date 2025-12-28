@@ -17,38 +17,62 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             ComponentsTheme {
-                MyNavigationController()
+               MyNavigation()
             }
         }
     }
 }
-
 @Composable
-fun MyNavigationController(){
-    val navigationController = rememberNavController()
+fun MyNavigation(){
+    val navController = rememberNavController()
 
-    NavHost(navController = navigationController, startDestination = "FirstPage"){
-        composable(route = "FirstPage"){
-            FirstPage(navigationController)
+    NavHost(navController = navController, startDestination = "FirstPage"){
+        composable("FirstPage") {
+            FirstPage(navController = navController)
         }
-        composable ("SecondPage/{name}/{age}", arguments = listOf(
-            navArgument("name"){
-                type = NavType.StringType
-            },
-            navArgument("age"){
-                type = NavType.IntType
-            }
-        )){navBackStackEntry ->
-          val name =  navBackStackEntry.arguments?.getString("name")
-            val age = navBackStackEntry.arguments?.getInt("age")
 
-            name?.let {  // let bu agar name null bo'lmasa tanaga kirdiradi
-                username ->
-                age?.let { userAge ->
-                    SecondPage(navigationController,username,userAge)
+        composable("SecondPage/{id}",
+            arguments = listOf(
+                navArgument("id"){
+                    type = NavType.IntType
                 }
+            )
+        ){
+            val countryId = it.arguments?.getInt("id")
+            countryId?.let {id ->
+                SecondPage(navController = navController, id = id)
             }
 
         }
     }
 }
+//@Composable
+//fun MyNavigationController() {
+//    val navigationController = rememberNavController()
+//
+//    NavHost(navController = navigationController, startDestination = "FirstPage") {
+//        composable(route = "FirstPage") {
+//            FirstPage(navigationController)
+//        }
+//        composable(
+//            "SecondPage/{name}/{age}", arguments = listOf(
+//            navArgument("name") {
+//                type = NavType.StringType
+//            },
+//            navArgument("age") {
+//                type = NavType.IntType
+//            }
+//        )) { navBackStackEntry ->
+//            val name = navBackStackEntry.arguments?.getString("name")
+//            val age = navBackStackEntry.arguments?.getInt("age")
+//
+//            name?.let {  // let bu agar name null bo'lmasa tanaga kirdiradi
+//                    username ->
+//                age?.let { userAge ->
+//                    SecondPage(navigationController, username, userAge)
+//                }
+//            }
+//
+//        }
+//    }
+//}
