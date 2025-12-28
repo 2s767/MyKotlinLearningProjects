@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowForward
@@ -57,7 +58,7 @@ fun FirstPage(navController : NavController) {
             )
         },
         content = {
-            LazyColumn(
+            LazyRow(
                 modifier = Modifier.padding(it)
             ){
                 items(
@@ -68,19 +69,19 @@ fun FirstPage(navController : NavController) {
                             Toast.makeText(myContext,"You selected the ${country.countryName}",
                                 Toast.LENGTH_SHORT).show()
                         },
-                            modifier = Modifier.fillMaxWidth().height(120.dp).padding(7.dp),
+                            modifier = Modifier.fillMaxWidth().height(300.dp).padding(7.dp),
                             colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.purple_500)),
                             shape = RoundedCornerShape(10.dp),
                             elevation = CardDefaults.cardElevation(7.dp),
                             border = BorderStroke(2.dp, color = Color.Red),
 
                             ) {
-                            Row(
-                                modifier = Modifier.fillMaxSize().padding(7.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween
+                            Column (
+                                modifier = Modifier.fillMaxSize().padding(7.dp).size(100.dp,250.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.SpaceBetween
                             ) {
-                                Row(verticalAlignment = Alignment.CenterVertically
+                                Column (horizontalAlignment = Alignment.CenterHorizontally
                                 ) {
                                     Image(painter = painterResource(id = country.countryImage), contentDescription = country.countryName,
                                         modifier = Modifier.size(80.dp).clip(RoundedCornerShape(100)).border(2.dp,Color.Red,
