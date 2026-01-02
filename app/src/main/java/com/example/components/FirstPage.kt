@@ -5,15 +5,16 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowForward
@@ -58,9 +59,19 @@ fun FirstPage(navController : NavController) {
             )
         },
         content = {
-            LazyRow(
-                modifier = Modifier.padding(it)
-            ){
+
+            LazyHorizontalGrid(
+                // Yonga qarab scroll qilish uchun Grid
+                modifier = Modifier.padding(it),
+                rows = GridCells.Adaptive(200.dp)
+            )
+//            LazyVerticalGrid(
+// Yuqoriga qarab scroll qilish uchun qullaniladigan
+            // Grid
+//                modifier = Modifier.padding(it),
+//                columns = GridCells.Adaptive(200.dp)
+//            )
+            {
                 items(
                     count = countryList.size,
                     itemContent = { index ->
